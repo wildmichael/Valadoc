@@ -1,0 +1,46 @@
+# - Configuration module for the Valadoc library
+# Sets the following variables:
+#  VALADOC_VERSION      Version number of Valadoc
+#  VALADOC_EXECUTABLE   The Valadoc executable
+#  VALADOC_INCLUDE_DIRS Include directories to use
+#  VALADOC_VAPI_DIR     Directory containing valadoc-1.0.vapi
+#  VALADOC_CMAKE_DIR    Directory containing this and related files
+#  VALADOC_LIBRARIES    Libraries to link against
+
+cmake_minimum_required(VERSION @VALADOC_MINIMUM_CMAKE_VERSION@ FATAL_ERROR)
+
+# find required Vala packages
+find_package(Vala @VALADOC_MINIMUM_VALA_VERSION@ REQUIRED)
+find_package(Gee @VALADOC_MINIMUM_GEE_VERSION@ REQUIRED)
+
+# vala compiler version (set in ValadocConfigVersion.cmake)
+set(VALADOC_VERSION ${Valadoc_VERSION})
+
+# directories and useful variables
+set(VALADOC_INCLUDE_DIR "@CONFIG_INC_DIR@")
+set(VALADOC_VAPI_DIR "@CONFIG_VAPI_DIR@")
+set(VALADOC_CMAKE_DIR "@CONFIG_CMAKE_DIR@")
+set(VALADOC_LIBRARY Valadoc:libvaladoc)
+set(VALADOC_EXECUTABLE Valadoc:valadoc)
+set(VALADOC_LIBRARIES ${VALADOC_LIBRARY})
+set(VALADOC_INCLUDE_DIRS
+  "${VALADOC_INCLUDE_DIR}"
+  @VALA_INCLUDE_DIRS@
+  "${VALA_DEV_INCLUDE_DIR}"
+  "${GEE_INCLUDE_DIR}"
+  "@LIBGRAPHVIZ_INCLUDE_DIR@"
+  "@GDKPIXBUF_INCLUDE_DIR@"
+  )
+
+# our library dependencies
+include("${VALADOC_CMAKE_DIR}/ValadocExports.cmake")
+
+# set vala specific properties
+set_target_properties(Valadoc:libvaladoc PROPERTIES
+  PUBLIC_VAPI_FILE "${VALADOC_VAPI_DIR}/valadoc-1.0.vapi"
+  INTERNAL_VAPI_FILE ""
+  VAPI_FILES "${VALADOC_VAPI_DIR}/valadoc-1.0.vapi"
+  VALA_PACKAGE_DEPENDENCIES "Gee:gee;Vala:vala;libgvc;config;gmodule-2.0"
+  )
+
+set(VALADOC_FOUND TRUE)
